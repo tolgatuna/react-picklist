@@ -1,6 +1,6 @@
 {
   "name": "react-picklist",
-  "version": "1.0.2",
+  "version": "1.1.2",
   "description": "React Picklist Component",
   "author": "tolgatuna",
   "license": "MIT",
@@ -20,12 +20,7 @@
   "peerDependencies": {
     "prop-types": "^15.5.4",
     "react": "^15.0.0 || ^16.0.0",
-    "react-dom": "^15.0.0 || ^16.0.0",
-    "css-reset": "0.0.1",
-    "memoize-one": "^4.0.0",
-    "react-beautiful-dnd": "^8.0.5",
-    "react-scripts": "1.1.4",
-    "styled-components": "^3.3.3"
+    "react-dom": "^15.0.0 || ^16.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
@@ -65,6 +60,10 @@
   "dependencies": {
     "css-reset": "0.0.1",
     "memoize-one": "^4.0.0",
-    "prop-types": "^15.6.2"
+    "react-beautiful-dnd": "^8.0.5",
+    "react-scripts": "1.1.4",
+    "styled-components": "^3.3.3",
+    "react-redux": "latest",
+    "redux-form": "latest"
   }
 }

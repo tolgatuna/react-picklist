@@ -4,11 +4,13 @@ import {DragDropContext} from 'react-beautiful-dnd'
 import Column from './column'
 import {mutliDragAwareReorder, multiSelectTo as multiSelect} from './utils'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { change } from 'redux-form'
 
 const Container = styled.div`
   display: flex;
   user-select: none;
-`;
+`
 
 const ButtonGroup = styled.div`
   margin-top: 30px;
@@ -17,7 +19,7 @@ const ButtonGroup = styled.div`
   align-items: center;
   justify-content: center;
   width: 50px;
-`;
+`
 
 const Button = styled.button`
   background: ${props => props.disabled ? '#cccccc' : 'palevioletred'};
@@ -31,14 +33,13 @@ const Button = styled.button`
   
   width: 40px;
   height: 40px;
-`;
-const leftColumnId = '1';
-const rightColumnId = '2';
+`
+const leftColumnId = '1'
+const rightColumnId = '2'
 
 const getItems = (columns, items, columnId) => {
-  return columns[columnId].selectedItemIds.map((itemId) => items[itemId]);
-};
-
+  return columns[columnId].selectedItemIds.map((itemId) => items[itemId])
+}
 
 class PickList extends Component {
   state = {
@@ -62,27 +63,27 @@ class PickList extends Component {
   };
 
   componentDidMount() {
-    window.addEventListener('click', this.onWindowClick);
-    window.addEventListener('keydown', this.onWindowKeyDown);
-    window.addEventListener('touchend', this.onWindowTouchEnd);
-    this.controlSelectedItems(this.state.selectedItemIds);
+    window.addEventListener('click', this.onWindowClick)
+    window.addEventListener('keydown', this.onWindowKeyDown)
+    window.addEventListener('touchend', this.onWindowTouchEnd)
+    this.controlSelectedItems(this.state.selectedItemIds)
   }
 
   componentWillUnmount() {
-    window.removeEventListener('click', this.onWindowClick);
-    window.removeEventListener('keydown', this.onWindowKeyDown);
-    window.removeEventListener('touchend', this.onWindowTouchEnd);
+    window.removeEventListener('click', this.onWindowClick)
+    window.removeEventListener('keydown', this.onWindowKeyDown)
+    window.removeEventListener('touchend', this.onWindowTouchEnd)
   }
 
   onDragStart = (start) => {
     const id = start.draggableId;
-    const selected = this.state.selectedItemIds.find((itemId) => itemId === id);
+    const selected = this.state.selectedItemIds.find((itemId) => itemId === id)
 
     // if dragging an item that is not selected - unselect all items
     if (!selected) {
-      this.unSelectAll();
+      this.unSelectAll()
     }
-    this.setState({draggingItemId: start.draggableId});
+    this.setState({draggingItemId: start.draggableId})
   };
 
   onDragEnd = (result, announce, outSelectedIds) => {
@@ -92,7 +93,7 @@ class PickList extends Component {
     // nothing to do
     if (!destination || result.reason === 'CANCEL') {
       this.setState({draggingItemId: null});
-      return;
+      return
     }
 
     const processed = mutliDragAwareReorder({
@@ -100,58 +101,58 @@ class PickList extends Component {
       columns: this.state.columns,
       selectedItemIds: outSelectedIds !== undefined ? outSelectedIds : this.state.selectedItemIds,
       source,
-      destination,
-    });
+      destination
+    })
 
     this.setState({
       ...processed,
-      draggingItemId: null,
-    });
-    this.controlSelectedItems(this.state.selectedItemIds);
+      draggingItemId: null
+    })
+    this.controlSelectedItems(this.state.selectedItemIds)
   };
 
   onWindowKeyDown = (event) => {
     if (event.defaultPrevented) {
-      return;
+      return
     }
 
     if (event.key === 'Escape') {
-      this.unSelectAll();
+      this.unSelectAll()
     }
   };
 
   onWindowClick = (event) => {
     if (event.defaultPrevented) {
-      return;
+      return
     }
-    this.unSelectAll();
+    this.unSelectAll()
   };
 
   onWindowTouchEnd = (event) => {
     if (event.defaultPrevented) {
-      return;
+      return
     }
-    this.unSelectAll();
+    this.unSelectAll()
   };
 
   controlSelectedItems = (selectedItemIds) => {
     let isRightAllActive = this.state.columns[leftColumnId].selectedItemIds.length > 0;
     let isLeftAllActive = this.state.columns[rightColumnId].selectedItemIds.length > 0;
 
-    let isRightActive = false;
-    let isLeftActive = false;
+    let isRightActive = false
+    let isLeftActive = false
 
     selectedItemIds.map(id => {
       if (this.state.columns[leftColumnId].selectedItemIds.includes(id)) {
-        isRightActive = true;
+        isRightActive = true
       }
-    });
+    })
 
     selectedItemIds.map(id => {
       if (this.state.columns[rightColumnId].selectedItemIds.includes(id)) {
-        isLeftActive = true;
+        isLeftActive = true
       }
-    });
+    })
 
     this.setState({
       isRightAllActive,
@@ -159,6 +160,8 @@ class PickList extends Component {
       isRightActive,
       isLeftActive
     })
+
+    this.props.dispatch(change(this.props.formId, this.props.name, this.state.columns[rightColumnId].selectedItemIds))
   };
 
   toggleSelection = (itemId) => {
@@ -169,18 +172,18 @@ class PickList extends Component {
       // Item was not previously selected
       // now will be the only selected item
       if (!wasSelected) {
-        return [itemId];
+        return [itemId]
       }
 
       // item was part of a selected group will now become the only selected item
       if (selectedItemIds.length > 1) {
-        return [itemId];
+        return [itemId]
       }
 
       // item was previously selected but not in a group
       // we will now clear the selection
-      return [];
-    })();
+      return []
+    })()
 
     this.setState({selectedItemIds: newItemIds});
     this.controlSelectedItems(newItemIds);
@@ -191,18 +194,18 @@ class PickList extends Component {
     const index = selectedItemIds.indexOf(itemId);
 
     // if not selected - add it to the selected items
-    const newSelectedIds = [...selectedItemIds, itemId];
+    const newSelectedIds = [...selectedItemIds, itemId]
     if (index === -1) {
-      this.setState({selectedItemIds: newSelectedIds});
-      this.controlSelectedItems(newSelectedIds);
-      return;
+      this.setState({selectedItemIds: newSelectedIds})
+      this.controlSelectedItems(newSelectedIds)
+      return
     }
 
     // it was previously selected and now needs to be removed from the group
-    const shallow = [...selectedItemIds];
-    shallow.splice(index, 1);
-    this.setState({selectedItemIds: shallow});
-    this.controlSelectedItems(shallow);
+    const shallow = [...selectedItemIds]
+    shallow.splice(index, 1)
+    this.setState({selectedItemIds: shallow})
+    this.controlSelectedItems(shallow)
   };
 
   // This behaviour matches the MacOSX finder selection
@@ -210,11 +213,11 @@ class PickList extends Component {
     const updated = multiSelect(
       this.state.columns,
       this.state.selectedItemIds,
-      newItemId,
-    );
+      newItemId
+    )
 
     if (updated == null) {
-      return;
+      return
     }
 
     this.setState({selectedItemIds: updated});
@@ -239,7 +242,7 @@ class PickList extends Component {
         index: 0,
         droppableId: leftColumnId
       }
-    };
+    }
 
     this.onDragEnd(rightButtonPressedResult);
   };
@@ -257,7 +260,7 @@ class PickList extends Component {
         index: 0,
         droppableId: leftColumnId
       }
-    };
+    }
 
     const outSelectedIds = this.state.columns[leftColumnId].selectedItemIds;
     this.onDragEnd(rightButtonPressedResult, null, outSelectedIds);
@@ -276,7 +279,7 @@ class PickList extends Component {
         index: 0,
         droppableId: rightColumnId
       }
-    };
+    }
 
     this.onDragEnd(leftButtonPressedResult);
   };
@@ -294,7 +297,7 @@ class PickList extends Component {
         index: 0,
         droppableId: rightColumnId
       }
-    };
+    }
 
     const outSelectedIds = this.state.columns[rightColumnId].selectedItemIds;
     this.onDragEnd(leftButtonPressedResult, null, outSelectedIds);
@@ -340,14 +343,16 @@ class PickList extends Component {
           />
         </Container>
       </DragDropContext>
-    );
+    )
   }
 }
 
 PickList.propTypes = {
+  formId: PropTypes.string,
+  name: PropTypes.string,
   leftColumn: PropTypes.object.isRequired,
   rightColumn: PropTypes.object.isRequired,
   items: PropTypes.object.isRequired
 };
 
-export default PickList;
+export default connect()(PickList);
