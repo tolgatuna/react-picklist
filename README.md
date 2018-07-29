@@ -15,12 +15,16 @@ npm install --save react-picklist
 ```jsx
 import React, { Component } from 'react'
 
-import MyComponent from 'react-picklist'
+import PickList from 'react-picklist'
 
 class Example extends Component {
   render () {
     return (
-      <MyComponent />
+      <PickList
+          leftColumn={this.state.columns['1']}
+          rightColumn={this.state.columns['2']}
+          items={this.state.items}
+      />
     )
   }
 }
