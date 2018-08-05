@@ -80,7 +80,6 @@ class PickList extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("RECEIVE PROPS : ", nextProps);
     if (nextProps.items !== undefined && nextProps.leftColumn !== undefined && nextProps.rightColumn !== undefined) {
       this.setState({
         ...this.state,
@@ -99,8 +98,6 @@ class PickList extends Component {
 
       })
     }
-
-    console.log("LATEST STATE : ", this.state);
   }
 
   onDragStart = (start) => {
