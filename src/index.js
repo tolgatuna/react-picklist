@@ -4,8 +4,8 @@ import {DragDropContext} from 'react-beautiful-dnd'
 import Column from './column'
 import {mutliDragAwareReorder, multiSelectTo as multiSelect} from './utils'
 import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
-import { change } from 'redux-form'
+import {connect} from 'react-redux'
+import {change} from 'redux-form'
 
 const Container = styled.div`
   display: flex;
@@ -38,7 +38,11 @@ const leftColumnId = '1'
 const rightColumnId = '2'
 
 const getItems = (columns, items, columnId) => {
-  return columns[columnId].selectedItemIds.map((itemId) => items[itemId])
+  if (columns[columnId] !== undefined && columns[columnId].selectedItemIds !== undefined && items !== undefined) {
+    return columns[columnId].selectedItemIds.map((itemId) => items[itemId])
+  } else {
+    return null;
+  }
 }
 
 class PickList extends Component {
@@ -73,6 +77,30 @@ class PickList extends Component {
     window.removeEventListener('click', this.onWindowClick)
     window.removeEventListener('keydown', this.onWindowKeyDown)
     window.removeEventListener('touchend', this.onWindowTouchEnd)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    console.log("RECEIVE PROPS : ", nextProps);
+    if (nextProps.items !== undefined && nextProps.leftColumn !== undefined && nextProps.rightColumn !== undefined) {
+      this.setState({
+        ...this.state,
+        items: nextProps.items,
+        columns: {
+          ...this.state.columns,
+          '1': {
+            ...nextProps.leftColumn,
+            id: '1'
+          },
+          '2': {
+            ...nextProps.rightColumn,
+            id: '2'
+          }
+        }
+
+      })
+    }
+
+    console.log("LATEST STATE : ", this.state);
   }
 
   onDragStart = (start) => {

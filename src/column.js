@@ -32,50 +32,55 @@ const ItemList = styled.div`
 `;
 
 const getSelectedMap = memoizeOne((selectedItemIds) =>
-    selectedItemIds.reduce((previous, current) => {
-        previous[current] = true;
-        return previous;
-    }, {}),
+  selectedItemIds.reduce((previous, current) => {
+    previous[current] = true;
+    return previous;
+  }, {}),
 );
 
 export default class Column extends Component {
-    render() {
-        const column = this.props.column;
-        const items = this.props.items;
-        const selectedItemIds = this.props.selectedItemIds;
-        const draggingItemId = this.props.draggingItemId;
-        return (
-            <Container>
-                <Title>{column.title}</Title>
-                <Droppable droppableId={column.id}>
-                    {(provided, snapshot) => (
-                        <ItemList
-                            innerRef={provided.innerRef}
-                            isDraggingOver={snapshot.isDraggingOver}
-                            {...provided.droppableProps}
-                        >
-                            {items.map((item, index) => {
-                                const isSelected = getSelectedMap(selectedItemIds)[item.id];
-                                const isGhosting = isSelected && Boolean(draggingItemId) && draggingItemId !== item.id;
-                                return (
-                                    <DraggableItem
-                                        item={item}
-                                        index={index}
-                                        key={item.id}
-                                        isSelected={isSelected}
-                                        isGhosting={isGhosting}
-                                        selectionCount={selectedItemIds.length}
-                                        toggleSelection={this.props.toggleSelection}
-                                        toggleSelectionInGroup={this.props.toggleSelectionInGroup}
-                                        multiSelectTo={this.props.multiSelectTo}
-                                    />
-                                );
-                            })}
-                            {provided.placeholder}
-                        </ItemList>
-                    )}
-                </Droppable>
-            </Container>
-        );
+  render() {
+    if(this.props.items === null) {
+      return (
+        <Container></Container>
+      )
     }
+    const column = this.props.column;
+    const items = this.props.items;
+    const selectedItemIds = this.props.selectedItemIds;
+    const draggingItemId = this.props.draggingItemId;
+    return (
+      <Container>
+        <Title>{column.title}</Title>
+        <Droppable droppableId={column.id}>
+          {(provided, snapshot) => (
+            <ItemList
+              innerRef={provided.innerRef}
+              isDraggingOver={snapshot.isDraggingOver}
+              {...provided.droppableProps}
+            >
+              {items.map((item, index) => {
+                const isSelected = getSelectedMap(selectedItemIds)[item.id];
+                const isGhosting = isSelected && Boolean(draggingItemId) && draggingItemId !== item.id;
+                return (
+                  <DraggableItem
+                    item={item}
+                    index={index}
+                    key={item.id}
+                    isSelected={isSelected}
+                    isGhosting={isGhosting}
+                    selectionCount={selectedItemIds.length}
+                    toggleSelection={this.props.toggleSelection}
+                    toggleSelectionInGroup={this.props.toggleSelectionInGroup}
+                    multiSelectTo={this.props.multiSelectTo}
+                  />
+                );
+              })}
+              {provided.placeholder}
+            </ItemList>
+          )}
+        </Droppable>
+      </Container>
+    );
+  }
 }
